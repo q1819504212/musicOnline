@@ -13,7 +13,6 @@
         list-style: none;
     }
     body{
-        background-color: #b5a5ff;
         background-image: url("9.jpg");
     }
     .box{
@@ -21,7 +20,7 @@
         padding: 20px;
         border: 1px solid #e1e4ff;
         margin: 50px auto;
-        background-image: url("7.jpg");
+        background-image: url("02.jpeg");
     }
     .ctr-box{
         width: 500px;
@@ -134,20 +133,21 @@
        position: relative;
        left: 300px;
    }
+    .active{
+        background-color: #63ff54;
+    }
 </style>
 <body>
 <!--大盒子-->
-
 <div class="box">
 <div class="a">
     <input type="text" id="searchTxt"><button id="searchBtn">搜索</button>
 </div>
-
     <!--控制组件盒子-->
     <div class="ctr-box">
         <!--专辑封面-->
         <div class="ctr-pic">
-            <img src="8.jpg" alt="">
+            <img src="lib/3.jpg" alt="">
         </div>
         <!--控制组件-->
         <div class="ctr-body">
@@ -157,7 +157,6 @@
             </div>
             <!--控制条-->
             <div class="bar">
-
                 <div class="bar-box">
                     <div class="total"></div>
                     <div class="now"></div>
@@ -171,26 +170,19 @@
             </div>
             <!--控制按钮-->
             <div class="ctr-btn">
-                <div class="prev">
-                </div>
-                <div class="start">
-                </div>
+                <div class="prev"></div>
+                <div class="start"></div>
                 <div class="next"></div>
                 <div class="volume"></div>
                 <div class="mode"></div>
-
             </div>
         </div>
-
     </div>
     <!--音乐列表盒子-->
     <div class="list-box">
-        <ul>
-
-        </ul>
+        <ul></ul>
     </div>
 </div>
-
 <audio></audio>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
 <script>
@@ -198,7 +190,7 @@
     // 歌名 歌手名 专辑封面 歌曲播放地址
     var  data =[];
     // 获取元素
-
+    var lis=null;
     var audio= document.querySelector('audio');
     var pic= document.querySelector('.ctr-pic img');
     var singer= document.querySelector('.singer span');
@@ -214,6 +206,7 @@
     var listBox = document.querySelector('.list-box ul');
     var searchTxt = document.querySelector('#searchTxt');
     var searchBtn = document.querySelector('#searchBtn');
+
 
     searchBtn.addEventListener('click',function () {
         //搜素音乐列表
@@ -243,7 +236,7 @@
                     str+='</span></li>'
                 }
                 listBox.innerHTML=str;
-                var lis =document .querySelectorAll('li');
+                lis =document .querySelectorAll('li');
                 // lis是数组
                 // lis[0].className='active';
             },
@@ -253,7 +246,6 @@
         })
     });
 
-    //console.log(str);
     //标识当前第几首歌
     var index= 0;
     // 旋转角度
@@ -269,22 +261,12 @@
         mode=++mode >modeArr.length-1 ? 0:mode;
         console.log(mode);
         modeBtn.style.backgroundPositionY=modeArr[mode]+'px';
-
     });
-    for(var i=0;i<data.length;i++){
-        lis[i].index=i;
-        lis[i].addEventListener('click',function () {
-            // 先知道我点的那一个li
-
-            index=this.index;
-            init();
-            play();
-        });
-    }
     //创建一个init方法
     function init() {
         // 初始化专辑封面，歌手歌曲名，播放路径，
         rotateDeg = 0;
+        audio.src='http://music.163.com/song/media/outer/url?id='+data[index].id+'.mp3 ';
         //pic.src = data[index].pic;
         //audio.src = data[index].url;
         singer.innerHTML = data[index].song + '---'+data[index].singer;
@@ -294,13 +276,11 @@
         };
         singer.innerHTML =data[index].name+'-------'+strSong;
         //切换列表选中项
-        // for(var i=0;i<data.length;i++){
-        //     lis[i].className='';
-        // }
-        // lis[index].className='active';
+        for(var i=0;i<data.length;i++){
+            lis[i].className='';
+        }
+        lis[index].className='active';
     }
-    // init();
-
     //播放
     function play(){
         pic.src=data[index].al.picUrl;
@@ -316,16 +296,12 @@
             rotateDeg++;
             pic.style.transform = 'rotate(' + rotateDeg + 'deg)'
         }, 30);
-
     }
-
     //播放
     //第一次点击播放，第二次点击暂停
     //自动播放
-
     strat .addEventListener('click',function () {
 //audio.paused为true的时候是暂停的
-
         if (audio.paused) {
             play();
         }else {
@@ -353,10 +329,6 @@
         //三元运算符
         // index--;
         index=++index>data.length-1 ? 0:index
-        // index--;
-        // if(index<0){
-        //     index=data.length-1;
-        // }
         init();
         play();
     });
@@ -398,7 +370,6 @@
                         return randomNum;
                     }
                         index=getRandom();
-
                         init();
                         play();
                         break;
@@ -424,7 +395,6 @@
     //播放空格键盘事件
     window.addEventListener('keydown',function (e) {
         // 检测按下了那个键
-        console.log(e.keyCode);
         if(e.keyCode === 32){
             if (audio.paused) {
                 // 播放音乐
@@ -437,33 +407,13 @@
                 clearInterval(timer);
             }
         }
-        if(e.keyCode === 37){
-            index = --index < 0 ? data.length - 1 : index;
-            init();
-            play();
-        }
-        if(e.keyCode === 39){
-            index = ++index > data.length ? 0 : index;
-            init();
-            play();
-        }
-        if (e.keyCode === 16) {
-            if(audio.ended===0){
-                index = ++index > data.length - 1 ? 0 : index;
-                init();
-                play();
-            } else if(audio.ended===1){
-                init();
-                play();
-            } else if(audio.ended===2){
-                do{
-                    var randomNum = Math.floor(Math.random() * data.length);
-                }while (randomNum === index);
-                index = randomNum;
-            }
+    });
+    $(searchTxt).on('keydown',function (e) {
+        if(e.keyCode ===13){
+
+            $(searchBtn).click();
         }
     });
 </script>
-
 </body>
 </html>
