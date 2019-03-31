@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    body{
+        background-color: pink;
+    }
+    .box{
+        width: 170px;
+        margin: 50px auto;
+        position: relative;
+        animation: boom 500ms alternate infinite;
+    }
+    .left,.right{
+        width: 100px;
+        height: 100px;
+        background-color: #ff6b6d;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        box-shadow: 0 0 40px #ff6b6d;
+    }
+    .left{
+        left: 0;
+    }
+    .right{
+        right: 0;
+    }
+    .boot{
+        width: 100px;
+        height: 100px;
+        background-color:#ff6b6d;
+        transform: rotate(45deg);
+        position: absolute;
+        top: 35px;
+        left: 35px;
+        box-shadow: 0 0 40px #ff6b6d;
+    }
+    @keyframes boom {
+        0%{
+        transform: scale(1);
+    }
+        50%{
+            transform: scale(3);
+        }
+        100%{
+          transform: scale(5);
+        }
+    }
+</style>
+<body>
+<div class="box">
+    <div class="left">
+        <div class="a"></div>
+    </div>
+    <div class="right">
+        <div class="b"></div>
+    </div>
+    <div class="boot">
+        <div class="c"></div>
+    </div>
+</div>
+</body>
+</html>
+
