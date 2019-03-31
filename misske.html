@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>音乐播放器</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    ul{
+        list-style: none;
+    }
+    body{
+        background-color: #b5a5ff;
+        background-image: url("9.jpg");
+    }
+    .box{
+        width: 500px;
+        padding: 20px;
+        border: 1px solid #e1e4ff;
+        margin: 50px auto;
+        background-image: url("7.jpg");
+    }
+    .ctr-box{
+        width: 500px;
+        display: flex;
+    }
+    .ctr-pic{
+        height: 150px;
+        width: 150px;
+    }
+    .ctr-pic img{
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+    .ctr-body{
+        width: 350px;
+        height: 150px;
+    }
+    .singer{
+        margin: 30px 0 0 30px;
+    }
+    .bar{
+        width: 200px;
+        position: relative;
+        margin: 15px;
+    }
+    .total{
+        width: 200px;
+        height: 2px;
+        background-color: #222d0d;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .now{
+        width: 0;
+        height: 2px;
+        background-color: #59ff43;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .ctr-bar{
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #332806;
+        position: absolute;
+        top: -3px;
+        left: 0;
+    }
+    .time{
+        position: absolute;
+        top: -8px;
+        right: -100px;
+    }
+    .ctr-btn{
+        width: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        margin: 35px 20px 20px 20px;
+
+    }
+    .ctr-btn  div{
+        background: url("player.png") no-repeat;
+    }
+    .ctr-btn .prev{
+        width: 20px;
+        height: 20px;
+        background-position-y: -30px;
+    }
+    .ctr-btn .start{
+        width: 20px;
+        height: 28px;
+        margin: -3px 10px;
+    }
+    .ctr-btn .next{
+        width: 20px;
+        height: 20px;
+        background-position-y: -52px;
+    }
+    .ctr-btn .volume{
+        width: 30px;
+        height: 25px;
+        background-position-y: -141px;
+    }
+    .ctr-btn .mode{
+        width: 28px;
+        height: 20px;
+        background-position-y: -74px;
+    }
+    .list-box{
+        width: 100%;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+    .list-box li{
+        height: 30px;
+        line-height: 30px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px dashed #456e37;
+    }
+    maction{
+        background-color: #59ff43;
+    }
+   .a{
+       font-size: 13px;
+       position: relative;
+       left: 300px;
+   }
+</style>
+<body>
+<!--大盒子-->
+
+<div class="box">
+<div class="a">
+    <input type="text" id="searchTxt"><button id="searchBtn">搜索</button>
+</div>
+
+    <!--控制组件盒子-->
+    <div class="ctr-box">
+        <!--专辑封面-->
+        <div class="ctr-pic">
+            <img src="8.jpg" alt="">
+        </div>
+        <!--控制组件-->
+        <div class="ctr-body">
+            <!--歌名-->
+            <div class="singer">
+                <span>再见----西单女孩</span>
+            </div>
+            <!--控制条-->
+            <div class="bar">
+
+                <div class="bar-box">
+                    <div class="total"></div>
+                    <div class="now"></div>
+                    <div class="ctr-bar"></div>
+                </div>
+                <p class="time">
+                    <span class="current">00:00</span>
+                    /
+                    <span class="totalTime">03:52</span>
+                </p>
+            </div>
+            <!--控制按钮-->
+            <div class="ctr-btn">
+                <div class="prev">
+                </div>
+                <div class="start">
+                </div>
+                <div class="next"></div>
+                <div class="volume"></div>
+                <div class="mode"></div>
+
+            </div>
+        </div>
+
+    </div>
+    <!--音乐列表盒子-->
+    <div class="list-box">
+        <ul>
+
+        </ul>
+    </div>
+</div>
+
+<audio></audio>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<script>
+    // 用来保存歌曲数据
+    // 歌名 歌手名 专辑封面 歌曲播放地址
+    var  data =[];
+    // 获取元素
+
+    var audio= document.querySelector('audio');
+    var pic= document.querySelector('.ctr-pic img');
+    var singer= document.querySelector('.singer span');
+    var strat= document.querySelector('.ctr-btn .start');
+    var prev= document.querySelector('.ctr-btn .prev');
+    var next= document.querySelector('.ctr-btn .next');
+    var currentTime= document.querySelector('.time .current');
+    var totalTime= document.querySelector('.time .totalTime');
+    var barBox= document.querySelector('.bar-box');
+    var ctrBar = document.querySelector('.ctr-bar');
+    var now = document.querySelector('.now');
+    var modeBtn = document.querySelector('.mode');
+    var listBox = document.querySelector('.list-box ul');
+    var searchTxt = document.querySelector('#searchTxt');
+    var searchBtn = document.querySelector('#searchBtn');
+
+    searchBtn.addEventListener('click',function () {
+        //搜素音乐列表
+        // 进行ajax请求
+        $(listBox ).on('click','li' ,function () {
+            index=$(this).index();
+            audio.src='http://music.163.com/song/media/outer/url?id='+data[index].id+'.mp3 ';
+            init();
+            play();
+        });
+        $.ajax({
+            url:'https://api.imjad.cn/cloudmusic/',
+            data:{
+                type:'search',
+                s:searchTxt .value
+            },
+            type:'get',
+            success:function (data1) {
+                // console.log(data.result.songs);
+                data = data1.result.songs;
+                var str='';
+                for(var i=0;i < data.length;i++){
+                    str+='<li><span>'+data[i].name+'</span><span>';
+                    for(var j=0;j<data[i].ar.length;j++){
+                        str+=data[i].ar[j].name+'  ';
+                    }
+                    str+='</span></li>'
+                }
+                listBox.innerHTML=str;
+                var lis =document .querySelectorAll('li');
+                // lis是数组
+                // lis[0].className='active';
+            },
+            error:function (err) {
+                console.log(err)
+            }
+        })
+    });
+
+    //console.log(str);
+    //标识当前第几首歌
+    var index= 0;
+    // 旋转角度
+    var rotateDeg = 0;
+    //保存定时器
+    var timer=null;
+    //获取当前播放模式
+    //标识当前播放模式，1，代表顺序 2代表单曲 3 代表随机
+    var  mode=1;
+    //b保存图片的positionY的值
+    var modeArr=[-206,-233,-73];
+    modeBtn.addEventListener('click',function () {
+        mode=++mode >modeArr.length-1 ? 0:mode;
+        console.log(mode);
+        modeBtn.style.backgroundPositionY=modeArr[mode]+'px';
+
+    });
+    for(var i=0;i<data.length;i++){
+        lis[i].index=i;
+        lis[i].addEventListener('click',function () {
+            // 先知道我点的那一个li
+
+            index=this.index;
+            init();
+            play();
+        });
+    }
+    //创建一个init方法
+    function init() {
+        // 初始化专辑封面，歌手歌曲名，播放路径，
+        rotateDeg = 0;
+        //pic.src = data[index].pic;
+        //audio.src = data[index].url;
+        singer.innerHTML = data[index].song + '---'+data[index].singer;
+        var strSong ='';
+        for(var j=0;j<data[index].ar.length;j++){
+            strSong+=data[index].ar[j].name+'  ';
+        };
+        singer.innerHTML =data[index].name+'-------'+strSong;
+        //切换列表选中项
+        // for(var i=0;i<data.length;i++){
+        //     lis[i].className='';
+        // }
+        // lis[index].className='active';
+    }
+    // init();
+
+    //播放
+    function play(){
+        pic.src=data[index].al.picUrl;
+        //播放音乐
+        audio.play();
+        // console.log(audio.paused);
+        //播放按钮变成暂停
+        strat.style.backgroundPositionX = -30 + 'px';
+        //专辑封面旋转
+        //在开启一个新的定时器之前，先清掉一个上一个定时器
+        clearInterval(timer);//无效
+        timer =  setInterval(function () {
+            rotateDeg++;
+            pic.style.transform = 'rotate(' + rotateDeg + 'deg)'
+        }, 30);
+
+    }
+
+    //播放
+    //第一次点击播放，第二次点击暂停
+    //自动播放
+
+    strat .addEventListener('click',function () {
+//audio.paused为true的时候是暂停的
+
+        if (audio.paused) {
+            play();
+        }else {
+            //暂停音乐
+            audio .pause();
+            strat.style.backgroundPositionX = 0+ 'px';
+            // 清楚定时器
+            clearInterval(timer);
+        }
+    });
+    //上一曲
+    prev.addEventListener('click',function () {
+        //三元运算符
+        // index--;
+        index=--index< 0 ? data.length-1:index
+        // index--;
+        // if(index<0){
+        //     index=data.length-1;
+        // }
+        init();
+        play();
+    });
+    //下一曲
+    next.addEventListener('click',function () {
+        //三元运算符
+        // index--;
+        index=++index>data.length-1 ? 0:index
+        // index--;
+        // if(index<0){
+        //     index=data.length-1;
+        // }
+        init();
+        play();
+    });
+    //准备时间
+    //canplay 当音频文件准备完成后，触发canplay事件
+    audio.addEventListener('canplay',function () {
+        //需要将音乐总时长转换成分钟和秒钟数
+        var min =parseInt(audio.duration/60);
+        var se= parseInt(audio.duration % 60);
+        totalTime.innerHTML=formatTime(min)+':'+formatTime(se);
+        audio.addEventListener('timeupdate',function () {
+            var currentmin =parseInt(audio.currentTime/60);
+            var currentse= parseInt(audio.currentTime % 60);
+            currentTime.innerHTML=formatTime(currentmin)+':'+formatTime(currentse);
+            var left=audio.currentTime/audio.duration*barBox.clientWidth;
+            ctrBar.style.left=left+'px';
+            now.style.width=left+'px';
+
+            if(audio.ended){
+                switch (mode) {
+                    case 0:
+                        //三元运算符
+                        index=++index >data.length-1?0:index;
+                        init();
+                        play();
+                        console.log('音乐播放完了')
+                        break;
+                    case 1:
+                        init();
+                        play();
+                        break;
+                    case 2:
+                        //递归算法
+                    function getRandom() {
+                        var randomNum=Math.floor(Math.random()*data.length);
+                        if(randomNum===index){
+                            randomNum=getRandom();
+                        }
+                        return randomNum;
+                    }
+                        index=getRandom();
+
+                        init();
+                        play();
+                        break;
+                }
+            }
+        });
+    });
+    barBox .addEventListener('click',function (e) {
+        //找到鼠标的位置
+        //鼠标点击的对象的相对位置
+        //挡鼠标点击的位置/总宽度*音乐总时长=当前音乐需要播放的位置
+        //console .log(e.offsetX);
+        //console .log(e.offsetY);
+        // console.log(barBox.clientWidth);
+        audio .currentTime=e.offsetX/barBox .clientWidth*audio.duration;
+
+    });
+    //格式化时间格式
+    function  formatTime(time) {
+        return time > 9 ? time :'0'+time;
+    }
+
+    //播放空格键盘事件
+    window.addEventListener('keydown',function (e) {
+        // 检测按下了那个键
+        console.log(e.keyCode);
+        if(e.keyCode === 32){
+            if (audio.paused) {
+                // 播放音乐
+                play();
+            }else{
+                //暂停音乐
+                audio.pause();
+                start.style.backgroundPositionX = 0 + 'px';
+                //清除定时器
+                clearInterval(timer);
+            }
+        }
+        if(e.keyCode === 37){
+            index = --index < 0 ? data.length - 1 : index;
+            init();
+            play();
+        }
+        if(e.keyCode === 39){
+            index = ++index > data.length ? 0 : index;
+            init();
+            play();
+        }
+        if (e.keyCode === 16) {
+            if(audio.ended===0){
+                index = ++index > data.length - 1 ? 0 : index;
+                init();
+                play();
+            } else if(audio.ended===1){
+                init();
+                play();
+            } else if(audio.ended===2){
+                do{
+                    var randomNum = Math.floor(Math.random() * data.length);
+                }while (randomNum === index);
+                index = randomNum;
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
